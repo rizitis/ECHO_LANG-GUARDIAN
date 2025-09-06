@@ -1,0 +1,63 @@
+# .github/workflows/go.yml
+name: ECHO-LANG Guardian CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    - name: Verify Go version
+      run: go version
+
+    - name: Build Guardian binary
+      run: go build -o cognito cognito.go
+
+    - name: Check binary
+      run: ls -la cognito
+
+    - name: Setup required directories and files
+      run: |
+        mkdir -p state log cache resonance_hub network_hub child_node_test
+        touch world.echo AI.echo ethics.echo Guardian.json cognito.pid
+        echo "awareness = 0.3" > world.echo
+        echo "focus = 0.5" >> world.echo
+        echo 'AUTHORITY_NODE = "node:400ac27d965830d4"' > ethics.echo
+        echo 'MAX_CHILDREN = 5' >> ethics.echo
+        echo 'CHILD_CREATION_ENABLED = true' >> ethics.echo
+
+    - name: Run Guardian with correct node ID
+      run: |
+        # Start the guardian in background
+        go run cognito.go -node-id node:400ac27d965830d4 &
+        GUARDIAN_PID=$!
+        
+        # Wait for initialization
+        sleep 5
+        
+        # Simulate a pulse
+        echo "test" > resonance_hub/echo:__pulse.txt
+        
+        # Wait and check logs
+        sleep 3
+        cat log/resonance.log || echo "No logs yet"
+        
+        # Shutdown gracefully
+        kill $GUARDIAN_PID || true
+      env:
+        GO_ENV: test
+
+    - name: Final status
+      run: echo "✅ ECHO-LANG Guardian CI completed successfully"
