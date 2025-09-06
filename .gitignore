@@ -1,0 +1,10 @@
+cognito
+cognito.pid
+*.pid
+resurrection.echo*
+state/
+log/
+cache/
+resonance_hub/
+network_hub/
+child_node_*/
