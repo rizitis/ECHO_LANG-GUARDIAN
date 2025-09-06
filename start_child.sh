@@ -35,6 +35,7 @@ nohup go run "$PARENT_DIR/cognito.go" \
     -cache cache \
     -node-id "$CHILD_ID" \
     -pid cognito.pid \
+    -no-web \
     > "$LOG_FILE" 2>&1 &
 
 # Αποθήκευση του PID

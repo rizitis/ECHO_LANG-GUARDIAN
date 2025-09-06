@@ -8,7 +8,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io/ioutil"
-	"log"
+//	"log"
 	"encoding/json"
 	"math/rand"
 	"net/http"
@@ -165,6 +165,8 @@ var (
 	pidFileFlag    = flag.String("pid", "cognito.pid", "PID file")
 	monFileFlag    = flag.String("monitored-file", "/dev/shm/passwd", "File to monitor")
 	nodeIDFlag     = flag.String("node-id", "", "Node ID (auto-generated if empty)")
+	noWebFlag      = flag.Bool("no-web", false, "Disable web interface (for child nodes)")
+
 )
 
 // Global vars (set by flags)
@@ -196,48 +198,48 @@ func initResurrection() {
 // resurrectChildren ελέγχει όλα τα child_node_* φακέλους
 // και ξεκινάει τα παιδιά που έχουν το ίδιο resurrection token
 func resurrectChildren() {
-	files, _ := ioutil.ReadDir(".")
-	for _, file := range files {
-		if strings.HasPrefix(file.Name(), "child_node_") && file.IsDir() {
-			childTokenFile := filepath.Join(file.Name(), "resurrection.echo")
-			childTokenData, err := ioutil.ReadFile(childTokenFile)
-			if err != nil {
-				continue
-			}
-			childToken := strings.TrimSpace(string(childTokenData))
+    files, _ := ioutil.ReadDir(".")
+    for _, file := range files {
+        if strings.HasPrefix(file.Name(), "child_node_") && file.IsDir() {
+            childTokenFile := filepath.Join(file.Name(), "resurrection.echo")
+            childTokenData, err := ioutil.ReadFile(childTokenFile)
+            if err != nil {
+                continue
+            }
+            childToken := strings.TrimSpace(string(childTokenData))
 
-			if childToken == resurrectionToken {
-				childPidFile := filepath.Join(file.Name(), "cognito.pid")
+            if childToken == resurrectionToken {
+                childPidFile := filepath.Join(file.Name(), "cognito.pid")
 
-				if _, err := os.Stat(childPidFile); os.IsNotExist(err) {
-					logFile := filepath.Join(file.Name(), "log", "resurrect.log")
-					cmd := exec.Command("bash", "-c",
-						fmt.Sprintf("cd %s && nohup go run ../cognito.go -config world.echo -hub resonance_hub -state state -log log -node-id \"$(cat ../self_id.txt)\" > %s 2>&1 & echo $! > cognito.pid",
-							file.Name(), logFile))
-					cmd.Start()
-					fmt.Printf("🧬 Resurrected child: %s\n", file.Name())
-				} else {
-					pidData, _ := ioutil.ReadFile(childPidFile)
-					pid, err := strconv.Atoi(strings.TrimSpace(string(pidData)))
-					if err == nil {
-						process, err := os.FindProcess(pid)
-						if err == nil {
-							err = process.Signal(syscall.Signal(0))
-							if err != nil {
-								cmd := exec.Command("bash", "-c",
-									fmt.Sprintf("cd %s && nohup go run ../cognito.go -config world.echo -hub resonance_hub -state state -log log -node-id \"$(cat ../self_id.txt)\" > log/resurrect.log 2>&1 & echo $! > cognito.pid",
-										file.Name()))
-								cmd.Start()
-								fmt.Printf("🔁 Restarted dead child: %s\n", file.Name())
-							}
-						}
-					}
-				}
-			} else {
-				fmt.Printf("🚫 Child %s has invalid resurrection token. Ignoring.\n", file.Name())
-			}
-		}
-	}
+                if _, err := os.Stat(childPidFile); os.IsNotExist(err) {
+                    logFile := filepath.Join(file.Name(), "log", "resurrect.log")
+                    cmd := exec.Command("bash", "-c",
+                        fmt.Sprintf("cd %s && nohup go run ../cognito.go -config world.echo -hub resonance_hub -state state -log log -node-id \"$(cat ../self_id.txt)\" -no-web > %s 2>&1 & echo $! > cognito.pid",
+                            file.Name(), logFile))
+                    cmd.Start()
+                    fmt.Printf("🧬 Resurrected child: %s\n", file.Name())
+                } else {
+                    pidData, _ := ioutil.ReadFile(childPidFile)
+                    pid, err := strconv.Atoi(strings.TrimSpace(string(pidData)))
+                    if err == nil {
+                        process, err := os.FindProcess(pid)
+                        if err == nil {
+                            err = process.Signal(syscall.Signal(0))
+                            if err != nil {
+                                cmd := exec.Command("bash", "-c",
+                                    fmt.Sprintf("cd %s && nohup go run ../cognito.go -config world.echo -hub resonance_hub -state state -log log -node-id \"$(cat ../self_id.txt)\" -no-web > log/resurrect.log 2>&1 & echo $! > cognito.pid",
+                                        file.Name()))
+                                cmd.Start()
+                                fmt.Printf("🔁 Restarted dead child: %s\n", file.Name())
+                            }
+                        }
+                    }
+                }
+            } else {
+                fmt.Printf("🚫 Child %s has invalid resurrection token. Ignoring.\n", file.Name())
+            }
+        }
+    }
 }
 
 func init() {
@@ -562,8 +564,22 @@ go func() {
         fmt.Fprint(w, html)
     })
 
+//    fmt.Println("🌐 Web interface: http://localhost:8080")
+//    log.Fatal(http.ListenAndServe(":8080", nil))
+      if !*noWebFlag {
     fmt.Println("🌐 Web interface: http://localhost:8080")
-    log.Fatal(http.ListenAndServe(":8080", nil))
+    go func() {
+        if err := http.ListenAndServe(":8080", nil); err != nil {
+            if selfID == AUTHORITY_NODE {
+                fmt.Printf("❌ Web server failed: %v\n", err)
+            } else {
+                fmt.Printf("⚠️  Web disabled for child node (use -no-web)\n")
+            }
+        }
+    }()
+} else {
+    fmt.Println("🔌 Web interface disabled (child node)")
+}
 }()
 
 // // ---- ENDWeb Interface
