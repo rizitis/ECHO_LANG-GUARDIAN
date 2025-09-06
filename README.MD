@@ -317,7 +317,7 @@ See [DISCLAIMER](DISCLAIMER.md) for important notes on usage, liability, and eth
 
 ##  License
 
-See [LICENSE]LICENSE) for usage and develop code.
+See [LICENSE](LICENSE) for usage and develop code.
 
 ---
 
