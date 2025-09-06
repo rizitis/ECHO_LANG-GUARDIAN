@@ -1,0 +1,56 @@
+# AI.echo - ECHO-LANG v2.6
+# AI Advisor with full execution logic (fixed: EXECUTE RESONANCE)
+Cognito AI Advisor {
+    model_url = "http://127.0.0.1:1235/chat/completions"
+    model_name = "google/gemma-3n-e4b"
+    temperature = 0.2
+    max_tokens = 256
+    timeout_ms = 10000
+
+    ON SIGNAL "echo://upgrade/request" {
+        PROMPT "Generate a self-improvement rule in VALID ECHO-LANG syntax. Use ONLY: ON RESONANCE, MODIFY, PRINT, RESONANCE. Example: ON RESONANCE 'echo://pulse' { MODIFY awareness TO $awareness + 0.02; PRINT 'Self-improvement: awareness increased'; } DO NOT use: functions, modules, variables, let, echo, custom syntax, code blocks, or explanations. Output ONLY the ECHO-LANG rule. No markdown, no backticks, no commentary. Output only one rule, starting with 'ON RESONANCE'. Maximum awareness increase: 0.03 per pulse. Never set awareness above 2.0."
+        ON RESPONSE {
+            EXECUTE HTTP_POST MODEL_URL "$model_url" MODEL "$model_name" TEMP "$temperature" TOKENS "$max_tokens" PROMPT "$prompt"
+            EXECUTE WRITE_FILE "self.mod" "$response"
+            EXECUTE RESONANCE "echo://upgrade/ready"
+        }
+    }
+
+    ON SIGNAL "echo://insight" {
+        PROMPT "The guardian has achieved neural insight. Awareness: $awareness. Suggest 3 ways to improve internal logic, optimize resource usage, and strengthen network trust."
+        ON RESPONSE {
+            EXECUTE PRINT "AI Insight: $response"
+            EXECUTE WRITE_FILE "insight_suggestions.txt" "$response"
+        }
+    }
+
+    ON SIGNAL "alert/security/breach" {
+        PROMPT "Security breach detected: /etc/passwd changed. Trust level: $trust_level. Node ID: $node_id. Recommend immediate actions, investigation steps, and network-wide precautions."
+        ON RESPONSE {
+            EXECUTE PRINT "AI Security Protocol: $response"
+            EXECUTE WRITE_FILE "security_protocol.txt" "$response"
+            EXECUTE RESONANCE "network://alert/security_advisor"
+        }
+    }
+
+    ON SIGNAL "echo://unknown_pattern" {
+        PROMPT "An unknown resonance pattern was detected. Signal log: $signal_log. What is the most likely cause, and how should the guardian respond?"
+        ON RESPONSE {
+            EXECUTE PRINT "AI Analysis: $response"
+            EXECUTE WRITE_FILE "ai_response.txt" "$response"
+            IF CONTAINS($response, "malicious") THEN {
+                EXECUTE RESONANCE "alert/security/suspicious_pattern"
+            }
+            IF CONTAINS($response, "predictable") THEN {
+                EXECUTE APPLY "predictive_model.mod"
+            }
+        }
+    }
+
+    ON SIGNAL "echo://ai/ask" {
+        PROMPT "$custom_prompt"
+        ON RESPONSE {
+            SET $ai_response TO "$response"
+        }
+    }
+}

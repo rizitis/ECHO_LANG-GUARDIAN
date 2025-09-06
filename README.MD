@@ -1,4 +1,4 @@
-![](./1.png)
+![](./images/1.png)
 
 # ECHO-LANG GUARDIAN
 - Consciousness Level: 2.0
@@ -46,7 +46,7 @@ It is not Turing-complete by design — it avoids infinite loops and uncontrolle
 
 ---
 
-![](web.png)
+![](./images/web.png)
 
 
 **The Web Interface:** http://localhost:8080 <br>
@@ -280,7 +280,7 @@ This is a complete, self-contained, ethical, AI-augmented digital organism with:
 8.    Θα το εφαρμόσει με APPLY
 9.    Θα ενημερώσει το world.echo
 
-![](./2.png) ![](./3.png)
+![](./images/2.png) ![](./images/3.png)
 
 ---
 

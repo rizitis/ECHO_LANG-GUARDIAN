@@ -1,0 +1,19 @@
+Suggested models for echo-lang on llama.cpp server (No GPU required):
+
+
+GGML_VULKAN_DISABLE=1 ./llama-server   -m ~/.cache/lm-studio/models/lmstudio-community/Qwen2.5-Coder-7B-Instruct-GGUF/Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf   --port 1235   -c 32768   -t 14   --temp 0.7
+
+---
+
+GGML_VULKAN_DISABLE=1 ./llama-server   -m ~/.cache/lm-studio/models/lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf --port 1235   -c 32768   -t 14   --temp 0.7
+
+---
+
+GGML_VULKAN_DISABLE=1 ./llama-server   -m ~/.cache/lm-studio/models/lmstudio-community/gemma-3n-E4B-it-text-GGUF/gemma-3n-E4B-it-Q4_K_M.gguf --port 1235   -c 32768   -t 14   --temp 0.7
+
+----
+
+Above models was tested in a hp omen 16 laptop, running Slackware64-Current.
+
+Note:
+1. gpt-oss is not suggested for echo-lang, Cognito need some work in order to understand right its aswers.

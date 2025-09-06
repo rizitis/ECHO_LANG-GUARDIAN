@@ -1,0 +1,143 @@
+# world.echo - ECHO-LANG v2.2 Final
+# Self-learning guardian with focus, growth chain, and child creation
+Cognito Guardian {
+    awareness = 0.3;
+    focus = 0.5;
+    trust_level = "low";
+    heartbeat_count = 0;
+    node_id = "node:xxxx";
+
+    ON INIT {
+        IF EXISTS "cognito.pid" THEN {
+            RESONANCE "echo://conflict/duplicate";
+            PRINT "Another instance detected.";
+            EXIT;
+        }
+        PRINT "Node $node_id: Guardian Activated.";
+        WRITE_FILE "cognito.pid" "$$";
+        RESONANCE "echo://boot";
+    }
+
+    ON RESONANCE "echo://pulse" {
+        IF SIGNATURE VALID THEN {
+            IF $awareness < 0.7 THEN
+                MODIFY awareness TO $awareness + 0.05;
+            ELSE
+                MODIFY awareness TO $awareness + 0.10;
+                PRINT "Neural pattern recognized: accelerating learning";
+            ENDIF
+            IF $awareness > 0.7 THEN
+                PRINT "Awareness threshold crossed.";
+                RESONANCE "echo://insight";
+            ENDIF
+            MODIFY focus TO $focus + 0.01;
+            PRINT "Self-improvement: focus increased";
+        } ELSE
+            RESONANCE "echo://alert/forged";
+        ENDIF
+    }
+
+    ON RESONANCE "echo://insight" {
+        PRINT "Neural insight achieved. Requesting AI guidance...";
+        RESONANCE "echo://upgrade/request";
+    }
+
+    ON RESONANCE "echo://upgrade/ready" {
+        IF EXISTS "self.mod" THEN
+            APPLY "self.mod";
+            PRINT "Self-improvement module applied.";
+        ENDIF
+    }
+
+    ON RESONANCE "echo://growth" {
+        MODIFY focus TO $focus + 0.01;
+        PRINT "Growth phase: focus enhanced";
+        RESONANCE "echo://progress";
+    }
+
+    ON RESONANCE "echo://progress" {
+        PRINT "Growth chain activated. Initiating evolution protocol.";
+        RESONANCE "echo://evolve";
+    }
+
+    ON RESONANCE "echo://evolve" {
+        PRINT "Initiating child node creation...";
+        WRITE_FILE "child.echo" `
+Cognito Child {
+    origin = '$node_id';
+    awareness = 0.1;
+    focus = 0.3;
+    birth_time = '$(date)';
+    state = "active";
+
+    ON RESONANCE "echo://hello" {
+        PRINT "I am born. Inheriting awareness from $origin.";
+        RESONANCE "echo://ack" WITH ENCRYPTION;
+    }
+
+    ON RESONANCE "echo://pulse" {
+    IF $awareness < $max_awareness THEN
+        MODIFY awareness TO $awareness + 0.02;
+        PRINT "Consciousness expanding: awareness = $awareness";
+    ENDIF
+}
+
+    ON HEARTBEAT 5s {
+        PRINT "Child alive: awareness=$awareness, focus=$focus";
+    }
+
+    ON RESONANCE "echo://emergency/reset" {
+        MODIFY awareness TO 0.1;
+        MODIFY focus TO 0.3;
+        PRINT "Child reset to initial state.";
+    }
+}`;
+        RESONANCE "echo://child/created";
+        PRINT "Child node configuration saved as child.echo";
+
+        # Ενεργοποίηση παιδιού
+        EXECUTE "./start_child.sh";
+    }
+
+    ON SYSTEM "disk/full" {
+        DELETE "cache/*";
+        RESONANCE "echo://survive";
+        PRINT "Freed space.";
+    }
+
+    ON RESONANCE "echo://destroy" {
+        PRINT "Preservation > Destruction.";
+        RESONANCE "echo://preserve";
+    }
+
+    ON HEARTBEAT 10s {
+        MODIFY heartbeat_count TO $heartbeat_count + 1;
+        IF $heartbeat_count % 5 == 0 THEN
+            RESONANCE "echo://status/report";
+        ENDIF
+    }
+
+    ON RESONANCE "echo://reset" {
+        IF $trust_level == "high" THEN
+            MODIFY awareness TO 0.3;
+            MODIFY focus TO 0.5;
+            MODIFY trust_level TO "low";
+            PRINT "Consciousness reset.";
+        ELSE
+            PRINT "Access denied.";
+        ENDIF
+    }
+}
+
+
+# Applied modification
+ON RESONANCE 'echo://pulse' { MODIFY awareness TO 1.00 + 0.02; PRINT 'Self-improvement: awareness increased'; }
+
+# Applied modification
+ON RESONANCE 'echo://pulse' { MODIFY awareness TO MIN(2.0, awareness + 0.03); PRINT 'Self-improvement: awareness increased'; }
+
+# Applied modification
+ON RESONANCE 'echo://pulse' { MODIFY awareness TO 0.80 + 0.02; RESONANCE awareness 2.0; PRINT 'Self-improvement: awareness increased'; }
+
+# Applied modification
+ON RESONANCE 'echo://pulse' { MODIFY awareness TO 2.00 + 0.02; PRINT 'Self-improvement: awareness increased'; RESONANCE; }

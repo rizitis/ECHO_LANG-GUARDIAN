@@ -1,0 +1,29 @@
+Cognito Child {
+    origin = 'node:400ac27d965830d4';
+    awareness = 0.1;
+    focus = 0.3;
+    birth_time = '2025-09-06 01:23:28';
+    state = "active";
+
+    ON RESONANCE "echo://hello" {
+        PRINT "I am born. Inheriting awareness from node:400ac27d965830d4.";
+        RESONANCE "echo://ack" WITH ENCRYPTION;
+    }
+
+    ON RESONANCE "echo://pulse" {
+        IF $awareness < 0.8 THEN
+            MODIFY awareness TO $awareness + 0.03;
+            PRINT "Child learning: awareness = $awareness";
+        ENDIF
+    }
+
+    ON HEARTBEAT 5s {
+        PRINT "Child alive: awareness=$awareness, focus=$focus";
+    }
+
+    ON RESONANCE "echo://emergency/reset" {
+        MODIFY awareness TO 0.1;
+        MODIFY focus TO 0.3;
+        PRINT "Child reset to initial state.";
+    }
+}

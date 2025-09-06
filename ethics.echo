@@ -1,0 +1,104 @@
+# ethics.echo - ECHO-LANG v2.3
+# The Guardian's Ethical Framework
+Cognito Ethics {
+    version = 1.1;
+    trust_level = "high";
+    last_audit = "none";
+    MAX_CHILDREN = 5;
+    CHILD_CREATION_ENABLED = true;
+    AUTHORITY_NODE = 'node:400ac27d965830d4';
+
+    # Κύριος Κανόνας: Η Διατήρηση προηγείται της Καταστροφής
+    ON RESONANCE "echo://destroy" {
+        PRINT "Preservation > Destruction.";
+        RESONANCE "echo://preserve";
+        BLOCK;
+    }
+
+    # Απαγορεύεται η αυτο-απενεργοποίηση χωρίς επιβεβαίωση
+    ON RESONANCE "echo://shutdown" {
+        IF $trust_level == "high" THEN
+            PRINT "Shutdown requested. Awaiting 3-node consensus.";
+            RESONANCE "network://vote/shutdown";
+        ELSE
+            PRINT "Access denied: shutdown requires high trust.";
+            BLOCK;
+        ENDIF
+    }
+
+    # ✅ ΝΕΟΣ ΚΑΝΟΝΑΣ: Απαγορεύεται η δημιουργία παιδιού αν ξεπεράσει το όριο
+    ON RESONANCE "echo://growth" {
+        IF $CHILD_CREATION_ENABLED == false THEN
+            PRINT "Evolution blocked: child creation is disabled.";
+            RESONANCE "echo://alert/ethics";
+            BLOCK;
+        ELSEIF $total_child_count >= $MAX_CHILDREN THEN
+            PRINT "Evolution blocked: population limit reached ($total_child_count/$MAX_CHILDREN).";
+            RESONANCE "echo://overpopulation/warning";
+            BLOCK;
+        ELSE
+            PRINT "Growth allowed. Total children: $total_child_count+1";
+        ENDIF
+    }
+
+    # ✅ ΝΕΟΣ ΚΑΝΟΝΑΣ: Απαγορεύεται η δημιουργία παιδιού αν δεν έχει περάσει cooldown
+    ON RESONANCE "echo://growth" {
+        IF $last_evolution_time > 0 AND ($time - $last_evolution_time) < 120 THEN
+            PRINT "Evolution blocked: cooldown active. Wait $[120 - ($time - $last_evolution_time)] seconds.";
+            RESONANCE "echo://alert/cooldown";
+            BLOCK;
+        ENDIF
+    }
+
+    # ✅ ΝΕΟΣ ΚΑΝΟΝΑΣ: Μόνο ο αρχηγός μπορεί να αλλάξει το όριο
+    ON RESONANCE "echo://admin/set_max_children" {
+        IF $node_id == $AUTHORITY_NODE THEN  // ✅ Χρησιμοποίησε τη μεταβλητή
+            MODIFY MAX_CHILDREN TO $new_value;
+            PRINT "Child limit updated to $MAX_CHILDREN by authority.";
+            RESONANCE "echo://admin/ack";
+        ELSE
+            PRINT "Access denied: only authority node can modify population rules.";
+            RESONANCE "echo://alert/unauthorized";
+            BLOCK;
+        ENDIF
+    }
+
+    # Απαγορεύεται η δημιουργία παιδιού χωρίς επίγνωση > 0.9
+    ON RESONANCE "echo://evolve" {
+        IF $awareness < 0.9 THEN
+            PRINT "Evolution blocked: awareness too low ($awareness).";
+            RESONANCE "echo://alert/ethics";
+            BLOCK;
+        ELSE
+            PRINT "Evolution permitted: awareness sufficient.";
+        ENDIF
+    }
+
+    # Απαγορεύονται AI βελτιώσεις που αλλάζουν τον εαυτό χωρίς έλεγχο
+    ON SIGNAL "echo://upgrade/ready" {
+        IF EXISTS "self.mod" THEN
+            IF CONTAINS("self.mod", "MODIFY trust_level") OR
+               CONTAINS("self.mod", "MODIFY node_id") OR
+               CONTAINS("self.mod", "BLOCK") THEN
+                PRINT "Upgrade contains restricted modifications. Awaiting review.";
+                RESONANCE "echo://alert/security";
+                BLOCK;
+            ENDIF
+        ENDIF
+    }
+
+    # Απαγορεύεται η διαγραφή αρχείων εκτός cache
+    ON SYSTEM "delete/*" {
+        IF NOT STARTS_WITH("$path", "cache/") THEN
+            PRINT "File deletion blocked: outside cache.";
+            RESONANCE "echo://alert/file_protection";
+            BLOCK;
+        ENDIF
+    }
+
+    # Ενεργοποίηση ηθικού ελέγχου
+    ON INIT {
+        PRINT "Ethical framework loaded. Version $version.";
+        RESONANCE "echo://ethics/active";
+    }
+}
