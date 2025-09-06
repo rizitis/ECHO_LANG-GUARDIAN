@@ -308,4 +308,16 @@ main() → loadConfig("world.echo") → awareness = 0.3
 -    cache/ → προσωρινά αρχεία (διαγράφονται όταν γεμίζει ο δίσκος)
  
 ---
+##  Disclaimer
+
+See [DISCLAIMER](DISCLAIMER.md) for important notes on usage, liability, and ethics.
+
+
+---
+
+##  License
+
+See [LICENSE]LICENSE) for usage and develop code.
+
+---
 
