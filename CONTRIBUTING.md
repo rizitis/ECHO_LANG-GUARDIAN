@@ -34,6 +34,10 @@ We welcome contributions that align with its core principles:
 We will respond within **7 days**.
 
 ### 3. **Submit Code**
+
+> Please use the Interpreter<br>
+ECHO-LANG has an [online interpreter](https://rizitis.github.io/echo_lang_interpreter.html) which also included in [docs](./docs) `folder`.
+
 1. Fork the repo
 2. Create a branch: `feature/your-idea` or `fix/issue-name`
 3. Make your changes

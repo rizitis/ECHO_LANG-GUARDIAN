@@ -43,6 +43,9 @@ The language supports:
 -    Signal handling (ON RESONANCE, ON HEARTBEAT)
 -    AI interaction (ON SIGNAL "echo://upgrade/request")
 It is not Turing-complete by design — it avoids infinite loops and uncontrolled recursion. It is ethical by structure. 
+---
+**Interpreter**<br>
+ECHO-LANG has an [online interpreter](https://rizitis.github.io/echo_lang_interpreter.html) which also included in [docs](./docs) `folder`.
 
 ---
 
