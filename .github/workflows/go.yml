@@ -1,4 +1,3 @@
-# .github/workflows/go.yml
 name: ECHO-LANG Guardian CI
 
 on:
@@ -22,14 +21,19 @@ jobs:
     - name: Verify Go version
       run: go version
 
-    - name: Build Guardian binary
-      run: go build -o cognito cognito.go
+    - name: Build Guardian binary (inside GUARDIAN folder)
+      run: |
+        cd GUARDIAN
+        go build -o cognito cognito.go
 
     - name: Check binary
-      run: ls -la cognito
-
-    - name: Setup required directories and files
       run: |
+        cd GUARDIAN
+        ls -la cognito
+
+    - name: Setup required directories and files (in GUARDIAN folder)
+      run: |
+        cd GUARDIAN
         mkdir -p state log cache resonance_hub network_hub child_node_test
         touch world.echo AI.echo ethics.echo Guardian.json cognito.pid
         echo "awareness = 0.3" > world.echo
@@ -40,6 +44,8 @@ jobs:
 
     - name: Run Guardian with correct node ID
       run: |
+        cd GUARDIAN
+        
         # Start the guardian in background
         go run cognito.go -node-id node:400ac27d965830d4 &
         GUARDIAN_PID=$!
