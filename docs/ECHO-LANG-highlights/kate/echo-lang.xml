@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="ECHO-LANG" section="Markup" extensions="*.echo" version="2" kateversion="5.0" author="You" license="MIT">
+  <highlighting>
+    <!-- Keyword Lists -->
+    <list name="keywords">
+      <item>ON</item>
+      <item>RESONANCE</item>
+      <item>SIGNAL</item>
+      <item>INIT</item>
+      <item>BLOCK</item>
+      <item>PRINT</item>
+      <item>MODIFY</item>
+      <item>IF</item>
+      <item>THEN</item>
+      <item>ELSE</item>
+      <item>ELSEIF</item>
+      <item>ENDIF</item>
+      <item>SET</item>
+      <item>TO</item>
+      <item>EXISTS</item>
+      <item>CONTAINS</item>
+      <item>STARTS_WITH</item>
+      <item>MIN</item>
+      <item>MAX</item>
+      <item>PROMPT</item>
+      <item>APPLY</item>
+      <item>WRITE_FILE</item>
+      <item>DELETE</item>
+      <item>NOT</item>
+      <item>SYSTEM</item>
+      <item>RESPONSE</item>
+      <item>EXIT</item>
+       <item>HEARTBEAT</item>
+    </list>
+
+    <!-- Commands that should be red -->
+    <list name="dangerous_commands">
+      <item>EXECUTE</item>
+    </list>
+
+    <!-- Event types -->
+    <list name="event_types">
+      <item>HEARTBEAT</item>
+      <item>SYSTEM</item>
+      <item>RESPONSE</item>
+    </list>
+
+    <!-- Contexts -->
+    <contexts>
+      <!-- Main context -->
+      <context name="Normal" attribute="Normal Text" lineEndContext="#stay">
+        <!-- Comments -->
+        <DetectChar attribute="Comment" context="Comment" char="#" firstNonSpace="true"/>
+
+        <!-- Double quotes -->
+        <DetectChar attribute="String" context="DoubleString" char="&quot;"/>
+
+        <!-- Single quotes -->
+        <DetectChar attribute="String" context="SingleString" char="'"/>
+
+        <!-- Variables -->
+        <RegExpr attribute="Variable" context="#stay" String="\$[a-zA-Z_][a-zA-Z0-9_]*"/>
+
+        <!-- Keywords -->
+        <keyword attribute="Keyword" context="#stay" String="keywords"/>
+
+        <!-- EXECUTE in red -->
+        <keyword attribute="Danger" context="#stay" String="dangerous_commands"/>
+
+        <!-- ON HEARTBEAT, ON SYSTEM, ON RESPONSE -->
+        <RegExpr attribute="Keyword" context="#stay" String="\bON\s+HEARTBEAT\b" />
+        <RegExpr attribute="Keyword" context="#stay" String="\bON\s+SYSTEM\b" />
+        <RegExpr attribute="Keyword" context="#stay" String="\bON\s+RESPONSE\b" />
+
+        <!-- Braces -->
+        <DetectChar attribute="Normal Text" context="Block" char="{" beginRegion="EchoBlock"/>
+        <DetectChar attribute="Normal Text" context="#pop" char="}" endRegion="EchoBlock"/>
+
+        <!-- Operators -->
+        <DetectChar attribute="Operator" context="#stay" char="="/>
+        <DetectChar attribute="Normal Text" context="#stay" char=";"/>
+
+        <!-- Numbers -->
+        <Float attribute="Float" context="#stay"/>
+        <Int attribute="DecVal" context="#stay"/>
+
+        <!-- Whitespace -->
+        <DetectSpaces attribute="Normal Text" context="#stay"/>
+      </context>
+
+      <!-- Comment context -->
+      <context name="Comment" attribute="Comment" lineEndContext="#pop">
+        <RegExpr attribute="Comment" context="#stay" String=".*"/>
+      </context>
+
+      <!-- Double String context -->
+      <context name="DoubleString" attribute="String" lineEndContext="#pop">
+        <DetectChar attribute="String" context="#pop" char="&quot;"/>
+        <HlCStringChar attribute="Escape" context="#stay"/>
+        <RegExpr attribute="Variable" context="#stay" String="\$[a-zA-Z_][a-zA-Z0-9_]*"/>
+        <RegExpr attribute="String" context="#stay" String="[^&quot;\\]+"/>
+      </context>
+
+      <!-- Single String context -->
+      <context name="SingleString" attribute="String" lineEndContext="#pop">
+        <DetectChar attribute="String" context="#pop" char="'"/>
+        <HlCStringChar attribute="Escape" context="#stay"/>
+        <RegExpr attribute="Variable" context="#stay" String="\$[a-zA-Z_][a-zA-Z0-9_]*"/>
+        <RegExpr attribute="String" context="#stay" String="[^'\\]+"/>
+      </context>
+
+      <!-- Block context -->
+      <context name="Block" attribute="Normal Text" lineEndContext="#stay">
+        <DetectChar attribute="Normal Text" context="#pop" char="}" endRegion="EchoBlock"/>
+        <IncludeRules context="Normal"/>
+      </context>
+    </contexts>
+
+    <!-- Item Data (Colors) -->
+    <itemDatas>
+      <itemData name="Normal Text" color="#D0D0D0" backgroundColor="#1E1E1E"/>
+      <itemData name="Keyword" color="#00FFFF" bold="true"/>
+      <itemData name="Danger" color="#b30000" bold="true"/> <!-- EXECUTE in red -->
+      <itemData name="String" color="#00FF00"/>
+      <itemData name="Variable" color="#FFA500" bold="true"/>
+      <itemData name="Comment" color="#808080" italic="true"/>
+      <itemData name="DecVal" color="#FF6347" bold="true"/>
+      <itemData name="Float" color="#FF6347" bold="true"/>
+      <itemData name="Escape" color="#FF69B4"/>
+      <itemData name="Operator" color="#FFFF00" bold="true"/>
+    </itemDatas>
+  </highlighting>
+
+  <!-- General -->
+  <general>
+    <keywords casesensitive="1"/>
+    <folding indentationsensitive="false"/>
+    <comments>
+      <comment name="singleLine" start="#"/>
+    </comments>
+  </general>
+</language>
