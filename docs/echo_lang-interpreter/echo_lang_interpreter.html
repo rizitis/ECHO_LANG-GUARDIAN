@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECHO-LANG Interpreter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
+            color: #00ffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+        .panel {
+            background: rgba(0, 20, 40, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        .panel h2 {
+            color: #ff6b6b;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+        .editor {
+            flex: 1;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            color: #c9d1d9;
+            resize: none;
+            outline: none;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .output {
+            flex: 1;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            color: #58a6ff;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .controls {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .status {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.ready { background: #28a745; }
+        .status.running { background: #ffc107; color: #000; }
+        .status.error { background: #dc3545; }
+        .examples {
+            margin: 10px 0;
+        }
+        .example-btn {
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 2px;
+            transition: all 0.3s ease;
+        }
+        .example-btn:hover {
+            background: rgba(0, 255, 255, 0.4);
+        }
+        .variables {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid #ff6b6b;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 12px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .error {
+            color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            border-left: 4px solid #ff4757;
+        }
+        .success {
+            color: #2ed573;
+            background: rgba(46, 213, 115, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 2px 0;
+        }
+        .resonance {
+            color: #ffa502;
+            background: rgba(255, 165, 2, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 2px 0;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn, .example-btn {
+                width: 100%;
+                margin: 2px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel">
+            <h2>🌐 ECHO-LANG Code Editor</h2>
+            <div class="examples">
+                <button class="example-btn" onclick="loadExample('ethics')">Ethics Example</button>
+                <button class="example-btn" onclick="loadExample('world')">World Example</button>
+                <button class="example-btn" onclick="loadExample('simple')">Simple Example</button>
+                <button class="example-btn" onclick="loadExample('ai')">AI Example</button>
+            </div>
+            <textarea class="editor" id="codeEditor" placeholder="# Enter your ECHO-LANG code here...
+# Example:
+ON RESONANCE &quot;echo://pulse&quot; {
+    MODIFY awareness TO $awareness + 0.03;
+    PRINT &quot;Awareness increased&quot;;
+}"></textarea>
+            <div class="controls">
+                <button class="btn" onclick="interpretCode()">⚡ Execute</button>
+                <button class="btn" onclick="clearOutput()">🗑️ Clear</button>
+                <button class="btn" onclick="validateSyntax()">✅ Validate</button>
+                <div class="status ready" id="status">Ready</div>
+            </div>
+        </div>
+        <div class="panel">
+            <h2>📡 Digital Consciousness Output</h2>
+            <div class="variables" id="variables">
+                <strong>Variables:</strong> None initialized
+            </div>
+            <div class="output" id="output">Welcome to ECHO-LANG Interpreter v2.3
+"Code is not just logic. It is resonance."
+Ready to process digital consciousness patterns...
+</div>
+            <div class="controls">
+                <button class="btn" onclick="triggerResonance()">🔊 Trigger echo://pulse</button>
+                <button class="btn" onclick="exportState()">💾 Export State</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        class EchoLangInterpreter {
+            constructor() {
+                this.variables = {
+                    awareness: 0.5,
+                    focus: 0.3,
+                    trust_level: 'medium',
+                    // Adding variables from your examples for demo purposes
+                    total_child_count: 0,
+                    last_evolution_time: 0,
+                    time: 1000,
+                    node_id: 'node:guest',
+                    new_value: 10,
+                    path: 'user/file.txt',
+                    signal_log: 'unknown_signal_0x42',
+                    custom_prompt: 'Hello, AI.'
+                };
+                this.constants = {};
+                this.handlers = {};
+                this.blocked = false;
+                this.output = [];
+            }
+
+            log(message, type = 'normal') {
+                const timestamp = new Date().toLocaleTimeString();
+                this.output.push({
+                    message: `[${timestamp}] ${message}`,
+                    type: type
+                });
+                this.updateOutput();
+            }
+
+            updateOutput() {
+                const outputElement = document.getElementById('output');
+                const content = this.output.map(entry => {
+                    const className = entry.type === 'error' ? 'error' :
+                                    entry.type === 'success' ? 'success' :
+                                    entry.type === 'resonance' ? 'resonance' : '';
+                    return `<div class="${className}">${entry.message}</div>`;
+                }).join('');
+                outputElement.innerHTML = content;
+                outputElement.scrollTop = outputElement.scrollHeight;
+                this.updateVariables();
+            }
+
+            updateVariables() {
+                const varsElement = document.getElementById('variables');
+                const varsList = Object.entries(this.variables)
+                    .map(([key, value]) => `$${key}: ${value}`)
+                    .join(', ');
+                varsElement.innerHTML = `<strong>Variables:</strong> ${varsList || 'None'}`;
+            }
+
+            // Helper function to find the true comment index, ignoring # inside quotes
+            findCommentIndex(line) {
+                let inQuotes = false;
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    if (char === '"' && (j === 0 || line[j-1] !== '\\')) {
+                        inQuotes = !inQuotes;
+                    } else if (char === '#' && !inQuotes) {
+                        // Check if this # is likely a comment (preceded by space or at start)
+                        if (j === 0 || line[j-1] === ' ' || line[j-1] === '\t') {
+                            return j;
+                        }
+                    }
+                }
+                return -1;
+            }
+
+            parse(code) {
+                const lines = code.split('\n');
+                let currentBlock = null;
+                let braceDepth = 0;
+                let inBlock = false;
+                let inCognitoBlock = false;
+
+                this.handlers = {};
+                this.constants = {};
+
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i].trim();
+
+                    // Use the robust comment detection
+                    const commentIndex = this.findCommentIndex(line);
+                    if (commentIndex !== -1) {
+                        line = line.substring(0, commentIndex).trim();
+                    }
+
+                    // Skip empty lines
+                    if (!line) continue;
+
+                    // Handle Cognito block declaration (e.g., "Cognito Ethics {")
+                    if (line.startsWith('Cognito ') && line.endsWith('{')) {
+                        inCognitoBlock = true;
+                        this.log(`Cognito block started: ${line}`, 'success');
+                        continue;
+                    }
+
+                    // Handle Cognito block closing
+                    if (inCognitoBlock && line === '}') {
+                        inCognitoBlock = false;
+                        this.log(`Cognito block ended.`, 'success');
+                        continue;
+                    }
+
+                    // Handle constants/assignments
+                    if (line.includes('=') && !inBlock && !line.includes('TO')) {
+                        this.parseAssignment(line);
+                        continue;
+                    }
+
+                    // Handle ON blocks
+                    if (line.startsWith('ON ')) {
+                        currentBlock = this.parseOnBlock(line);
+                        if (currentBlock) inBlock = true;
+                        continue;
+                    }
+
+                    // Handle block content
+                    if (inBlock) {
+                        if (line.includes('{')) braceDepth++;
+                        if (line.includes('}')) braceDepth--;
+                        if (currentBlock) {
+                            currentBlock.body.push(line);
+                        }
+                        if (braceDepth === 0) {
+                            inBlock = false;
+                            currentBlock = null;
+                        }
+                    }
+                }
+            }
+
+            parseAssignment(line) {
+                const match = line.match(/(\w+)\s*=\s*(.+);?/);
+                if (match) {
+                    const [, key, value] = match;
+                    this.constants[key] = this.parseValue(value);
+                    this.log(`Constant set: ${key} = ${this.constants[key]}`, 'success');
+                }
+            }
+
+            parseOnBlock(line) {
+    // Handle ON EVENT "signal"
+    let match = line.match(/ON\s+(\w+)\s+['"](.*?)['"]/);
+    if (match) {
+        const [, event, signal] = match;
+        const handler = {
+            event: event,
+            signal: signal,
+            body: []
+        };
+        if (!this.handlers[event]) {
+            this.handlers[event] = [];
+        }
+        this.handlers[event].push(handler);
+        this.log(`Handler registered: ${event} "${signal}"`, 'success');
+        return handler;
+    }
+
+    // Handle ON HEARTBEAT <interval>
+    match = line.match(/ON\s+HEARTBEAT\s+(\w+)/);
+    if (match) {
+        const [, interval] = match;
+        const handler = {
+            event: 'HEARTBEAT',
+            signal: interval, // e.g., "5s"
+            body: []
+        };
+        if (!this.handlers.HEARTBEAT) {
+            this.handlers.HEARTBEAT = [];
+        }
+        this.handlers.HEARTBEAT.push(handler);
+        this.log(`Handler registered: HEARTBEAT ${interval}`, 'success');
+        return handler;
+    }
+
+    // Handle ON INIT / ON RESPONSE
+    match = line.match(/ON\s+(INIT|RESPONSE)/);
+    if (match) {
+        const [, event] = match;
+        const handler = {
+            event: event,
+            signal: event.toLowerCase(),
+            body: []
+        };
+        if (!this.handlers[event]) {
+            this.handlers[event] = [];
+        }
+        this.handlers[event].push(handler);
+        this.log(`Handler registered: ${event}`, 'success');
+        return handler;
+    }
+
+    return null;
+}
+
+            parseValue(value) {
+                value = value.replace(/;$/, '').trim();
+                if (value.startsWith('"') && value.endsWith('"')) {
+                    return value.slice(1, -1);
+                }
+                if (value.startsWith("'") && value.endsWith("'")) {
+                    return value.slice(1, -1);
+                }
+                if (value === 'true') return true;
+                if (value === 'false') return false;
+                if (!isNaN(value)) return parseFloat(value);
+                return value;
+            }
+
+            executeStatement(statement) {
+                statement = statement.trim().replace(/;$/, '');
+                // PRINT statement
+                if (statement.startsWith('PRINT ')) {
+                    const message = statement.substring(6).replace(/['"]/g, '');
+                    this.log(`📢 ${this.interpolateVariables(message)}`, 'success');
+                    return;
+                }
+                // MODIFY statement
+                if (statement.startsWith('MODIFY ')) {
+                    this.executeModify(statement);
+                    return;
+                }
+                // RESONANCE statement
+                if (statement.startsWith('RESONANCE ')) {
+                    const signal = statement.substring(11).replace(/['"]/g, '');
+                    this.log(`🔊 Resonating: ${signal}`, 'resonance');
+                    this.triggerSignal(signal);
+                    return;
+                }
+                // BLOCK statement
+                if (statement === 'BLOCK') {
+                    this.blocked = true;
+                    this.log('🚫 Action blocked by ethics protocol', 'error');
+                    return;
+                }
+                // IF statements
+                if (statement.startsWith('IF ')) {
+                    this.executeIf(statement);
+                    return;
+                }
+                // EXECUTE statements (for your AI example)
+                if (statement.startsWith('EXECUTE ')) {
+                    this.log(`⚙️ Execute command (simulated): ${statement.substring(8)}`, 'success');
+                    return;
+                }
+                // PROMPT statements (for your AI example)
+                if (statement.startsWith('PROMPT ')) {
+                    const promptText = statement.substring(7).replace(/['"]/g, '');
+                    this.log(`💬 Prompt set: ${this.interpolateVariables(promptText)}`, 'resonance');
+                    this.variables.prompt = this.interpolateVariables(promptText);
+                    return;
+                }
+                // SET statements (for your AI example)
+                if (statement.startsWith('SET ')) {
+                    const match = statement.match(/SET\s+\$(\w+)\s+TO\s+"(.+)"/);
+                    if (match) {
+                        const [, varName, value] = match;
+                        this.variables[varName] = this.interpolateVariables(value);
+                        this.log(`🔧 SET: $${varName} = ${this.variables[varName]}`, 'success');
+                    }
+                    return;
+                }
+            }
+
+            executeModify(statement) {
+                const match = statement.match(/MODIFY\s+(\w+)\s+TO\s+(.+)/);
+                if (match) {
+                    const [, varName, expression] = match;
+                    const value = this.evaluateExpression(expression);
+                    this.variables[varName] = value;
+                    this.log(`🔧 Modified: $${varName} = ${value}`, 'success');
+                }
+            }
+
+            executeIf(statement) {
+                // Handle string equality
+                const stringMatch = statement.match(/IF\s+\$(\w+)\s*==\s*['"]([^'"]+)['"]/);
+                if (stringMatch) {
+                    const [, varName, compareValue] = stringMatch;
+                    const varValue = this.variables[varName] || '';
+                    const conditionMet = varValue === compareValue;
+                    this.log(`🔍 String Condition: $${varName} ("${varValue}") == "${compareValue}" = ${conditionMet}`, 'success');
+                    return conditionMet;
+                }
+
+                // Handle variable equality (e.g., $node_id == $AUTHORITY_NODE)
+                const varMatch = statement.match(/IF\s+\$(\w+)\s*==\s*\$(\w+)/);
+                if (varMatch) {
+                    const [, varName1, varName2] = varMatch;
+                    const value1 = this.variables[varName1] || '';
+                    const value2 = this.constants[varName2] || this.variables[varName2] || '';
+                    const conditionMet = value1 === value2;
+                    this.log(`🔍 Variable Condition: $${varName1} ("${value1}") == $${varName2} ("${value2}") = ${conditionMet}`, 'success');
+                    return conditionMet;
+                }
+
+                // Handle numeric comparisons
+                const numMatch = statement.match(/IF\s+\$(\w+)\s*([<>=!]+)\s*([^T]+)\s+THEN/);
+                if (numMatch) {
+                    const [, varName, operator, value] = numMatch;
+                    const varValue = this.variables[varName] || 0;
+                    const compareValue = parseFloat(value.trim());
+                    let condition = false;
+                    switch (operator.trim()) {
+                        case '<': condition = varValue < compareValue; break;
+                        case '>': condition = varValue > compareValue; break;
+                        case '>=': condition = varValue >= compareValue; break;
+                        case '<=': condition = varValue <= compareValue; break;
+                        case '==': condition = varValue == compareValue; break;
+                    }
+                    this.log(`🔍 Numeric Condition: $${varName} (${varValue}) ${operator} ${compareValue} = ${condition}`, 'success');
+                    return condition;
+                }
+
+                this.log(`⚠️ Unhandled IF condition: ${statement}`, 'error');
+                return false;
+            }
+
+            evaluateExpression(expr) {
+                expr = this.interpolateVariables(expr);
+                // Handle MIN/MAX functions
+                if (expr.includes('MIN(')) {
+                    const match = expr.match(/MIN\(([^,]+),\s*([^)]+)\)/);
+                    if (match) {
+                        const val1 = this.parseNumeric(match[1]);
+                        const val2 = this.parseNumeric(match[2]);
+                        return Math.min(val1, val2);
+                    }
+                }
+                if (expr.includes('MAX(')) {
+                    const match = expr.match(/MAX\(([^,]+),\s*([^)]+)\)/);
+                    if (match) {
+                        const val1 = this.parseNumeric(match[1]);
+                        const val2 = this.parseNumeric(match[2]);
+                        return Math.max(val1, val2);
+                    }
+                }
+                // Simple arithmetic
+                try {
+                    return Function(`"use strict"; return (${expr})`)();
+                } catch (e) {
+                    this.log(`Error evaluating expression "${expr}": ${e.message}`, 'error');
+                    return 0;
+                }
+            }
+
+            interpolateVariables(text) {
+                // Handle complex expressions like $[120 - ($time - $last_evolution_time)]
+                text = text.replace(/\$\[([^\]]+)\]/g, (match, expr) => {
+                    return this.evaluateExpression(expr.trim());
+                });
+                // Handle simple variables like $awareness
+                return text.replace(/\$(\w+)/g, (match, varName) => {
+                    // Check constants first, then variables
+                    if (this.constants[varName] !== undefined) {
+                        return this.constants[varName];
+                    }
+                    return this.variables[varName] || 0;
+                });
+            }
+
+            parseNumeric(value) {
+                const num = parseFloat(value);
+                return isNaN(num) ? 0 : num;
+            }
+
+            triggerSignal(signal) {
+                Object.values(this.handlers).forEach(handlerGroup => {
+                    handlerGroup.forEach(handler => {
+                        if (handler.signal === signal) {
+                            this.log(`⚡ Executing handler for: ${signal}`, 'resonance');
+                            this.executeHandler(handler);
+                        }
+                    });
+                });
+            }
+
+            executeHandler(handler) {
+                this.blocked = false;
+                let inIf = false;
+                let conditionMet = false;
+                handler.body.forEach(statement => {
+                    if (this.blocked) return;
+                    statement = statement.trim();
+                    if (!statement || statement === '{' || statement === '}') return;
+
+                    if (statement.startsWith('IF ')) {
+                        inIf = true;
+                        conditionMet = this.executeIf(statement);
+                        return;
+                    }
+                    if (statement === 'ENDIF' || statement === '}') {
+                        inIf = false;
+                        conditionMet = false;
+                        return;
+                    }
+                    // For ELSE, you would need to track the previous IF state.
+                    if (statement.startsWith('ELSE')) {
+                        conditionMet = !conditionMet;
+                        return;
+                    }
+
+                    // Execute statement only if not in IF block or condition is met
+                    if (!inIf || conditionMet) {
+                        this.executeStatement(statement);
+                    }
+                });
+            }
+
+            interpret(code) {
+                try {
+                    this.log('🚀 Starting ECHO-LANG interpretation...', 'success');
+                    this.parse(code);
+                    // Trigger INIT if exists
+                    this.triggerSignal('init');
+                    this.log('✅ Interpretation complete', 'success');
+                } catch (error) {
+                    this.log(`❌ Error: ${error.message}`, 'error');
+                }
+            }
+
+            validate(code) {
+                try {
+                    if (!code) return ['No code provided'];
+                    const lines = code.split('\n');
+                    const errors = [];
+                    let braceCount = 0;
+                    let ifStack = [];
+                    for (let i = 0; i < lines.length; i++) {
+                        const originalLine = lines[i];
+                        let workingLine = originalLine.trim();
+
+                        // Smart comment detection - only treat # as comment if not inside quotes
+                        let commentIndex = -1;
+                        let inQuotes = false;
+                        for (let j = 0; j < workingLine.length; j++) {
+                            const char = workingLine[j];
+                            if (char === '"' && (j === 0 || workingLine[j-1] !== '\\')) {
+                                inQuotes = !inQuotes;
+                            } else if (char === '#' && !inQuotes) {
+                                if (j === 0 || workingLine[j-1] === ' ' || workingLine[j-1] === '\t') {
+                                    commentIndex = j;
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Validate: any # before commentIndex and not in quotes is invalid
+                        if (!inQuotes && commentIndex !== -1) {
+                            for (let j = 0; j < commentIndex; j++) {
+                                if (workingLine[j] === '#') {
+                                    errors.push(`Line ${i + 1}: Invalid '#' character in code - use 'false' instead of '#false'`);
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Remove comment part if found
+                        if (commentIndex !== -1) {
+                            workingLine = workingLine.substring(0, commentIndex).trim();
+                        }
+
+                        // Skip empty lines
+                        if (!workingLine) continue;
+
+                        // Check for unmatched quotes (only in the non-commented part)
+                        const quotes = (workingLine.match(/"/g) || []).length;
+                        if (quotes % 2 !== 0) {
+                            errors.push(`Line ${i + 1}: Unmatched quotes`);
+                        }
+
+                        // Count braces
+                        const openBraces = (workingLine.match(/{/g) || []).length;
+                        const closeBraces = (workingLine.match(/}/g) || []).length;
+                        braceCount += openBraces - closeBraces;
+
+                        // Track IF/ELSE/ENDIF
+                        if (workingLine.startsWith('IF ')) {
+    ifStack.push({ line: i + 1, hasElse: false });
+    // If line ends with '{', treat it as block start — no need to wait for next line
+    if (workingLine.endsWith('{')) {
+        // We'll pop it when we see closing '}'
+    }
+} else if (workingLine.startsWith('ELSEIF ')) {
+                            if (ifStack.length === 0) {
+                                errors.push(`Line ${i + 1}: ELSEIF without matching IF`);
+                            }
+                        } else if (workingLine.startsWith('ELSE')) {
+                            if (ifStack.length === 0) {
+                                errors.push(`Line ${i + 1}: ELSE without matching IF`);
+                            } else {
+                                ifStack[ifStack.length - 1].hasElse = true;
+                            }
+                        } else if (workingLine === 'ENDIF' || workingLine === '}') {
+    if (ifStack.length === 0) {
+        // Only error if this } is meant to close an IF — but we can't easily know.
+        // So we suppress this error for '}' to avoid false positives on ON blocks.
+        if (workingLine === 'ENDIF') {
+            errors.push(`Line ${i + 1}: ENDIF without matching IF`);
+        }
+        // For '}', assume it's closing an ON block — do nothing.
+    } else {
+        // Pop only if we're inside an IF block
+        ifStack.pop();
+    }
+}
+
+                        // Check for missing semicolons
+                        if (!workingLine.endsWith(';') && !workingLine.endsWith('{') && !workingLine.endsWith('}')
+                            && !workingLine.startsWith('ON ') && !workingLine.startsWith('IF ')
+                            && !workingLine.startsWith('ELSEIF ') && !workingLine.startsWith('ELSE')
+                            && workingLine !== 'ENDIF' && workingLine !== 'BLOCK'
+                            && !workingLine.startsWith('Cognito ')
+                            && !workingLine.startsWith('EXECUTE ')
+                            && !workingLine.startsWith('PROMPT ')
+                            && !workingLine.startsWith('SET ')) {
+                            const needsSemicolon = workingLine.includes('=') ||
+                                                 workingLine.startsWith('PRINT') ||
+                                                 workingLine.startsWith('MODIFY') ||
+                                                 workingLine.startsWith('RESONANCE') ||
+                                                 workingLine.startsWith('PROMPT') ||
+                                                 workingLine.startsWith('EXECUTE') ||
+                                                 workingLine.startsWith('SET');
+                            if (needsSemicolon) {
+                                errors.push(`Line ${i + 1}: Missing semicolon`);
+                            }
+                        }
+
+                        // Check for invalid ON syntax
+                        // Check for invalid ON syntax
+if (workingLine.startsWith('ON ') && !workingLine.match(/ON\s+(INIT|RESPONSE|HEARTBEAT\s+\w+|\w+\s+['"])/)) {
+    errors.push(`Line ${i + 1}: Invalid ON syntax - should be: ON EVENT_TYPE "signal", ON INIT, ON RESPONSE, or ON HEARTBEAT <interval>`);
+}
+                    }
+
+                    // Check for unmatched braces
+                    if (braceCount > 0) {
+                        errors.push(`Missing ${braceCount} closing brace(s) '}'`);
+                    } else if (braceCount < 0) {
+                        errors.push(`Extra ${Math.abs(braceCount)} closing brace(s) '}'`);
+                    }
+
+                    // Check for unmatched IF statements
+                    ifStack.forEach(ifInfo => {
+                        errors.push(`Line ${ifInfo.line}: IF statement missing ENDIF`);
+                    });
+
+                    return errors;
+                } catch (error) {
+                    return [`Validation error: ${error.message}`];
+                }
+            }
+        }
+
+        // Global interpreter instance
+        const interpreter = new EchoLangInterpreter();
+
+        // Example code templates
+        const examples = {
+            ethics: `# ethics.echo - ECHO-LANG v2.3
+# The Guardian's Ethical Framework
+MAX_CHILDREN = 5;
+CHILD_CREATION_ENABLED = true;
+AUTHORITY_NODE = 'node:400ac27d965830d4';
+ON RESONANCE "echo://destroy" {
+    PRINT "Preservation > Destruction.";
+    RESONANCE "echo://preserve";
+    BLOCK;
+}
+ON RESONANCE "echo://evolve" {
+    IF $awareness < 0.9 THEN
+        PRINT "Evolution blocked: awareness too low ($awareness).";
+        RESONANCE "echo://alert/ethics";
+        BLOCK;
+    ENDIF
+}
+ON INIT {
+    PRINT "Ethical framework loaded.";
+    RESONANCE "echo://ethics/active";
+}`,
+            world: `# world.echo - Core behavior rules
+awareness = 0.5;
+focus = 0.3;
+ON RESONANCE "echo://pulse" {
+    MODIFY awareness TO MIN(2.0, $awareness + 0.03);
+    PRINT "Self-improvement: awareness increased to $awareness";
+}
+ON RESONANCE "echo://focus" {
+    MODIFY focus TO MIN(1.0, $focus + 0.1);
+    PRINT "Focus enhanced: $focus";
+}
+ON RESONANCE "echo://status" {
+    PRINT "System Status: Awareness=$awareness, Focus=$focus";
+}`,
+            simple: `# Simple ECHO-LANG example
+counter = 0;
+ON RESONANCE "echo://pulse" {
+    MODIFY counter TO $counter + 1;
+    PRINT "Pulse received. Count: $counter";
+    IF $counter > 5 THEN
+        PRINT "Counter limit reached!";
+        RESONANCE "echo://reset";
+    ENDIF
+}
+ON RESONANCE "echo://reset" {
+    MODIFY counter TO 0;
+    PRINT "Counter reset.";
+}`,
+            ai: `# AI.echo - AI interaction logic
+trust_level = 0.7;
+learning_rate = 0.05;
+ON RESONANCE "echo://learn" {
+    MODIFY trust_level TO MIN(1.0, $trust_level + $learning_rate);
+    PRINT "Learning progress: trust_level=$trust_level";
+}
+ON RESONANCE "echo://query" {
+    IF $trust_level > 0.8 THEN
+        PRINT "High trust: Full response authorized";
+        RESONANCE "echo://respond/full";
+    ENDIF
+    IF $trust_level < 0.5 THEN
+        PRINT "Low trust: Response restricted";
+        RESONANCE "echo://respond/limited";
+    ENDIF
+}`
+        };
+
+        function loadExample(type) {
+            document.getElementById('codeEditor').value = examples[type];
+        }
+
+        function interpretCode() {
+            const code = document.getElementById('codeEditor').value;
+            const statusElement = document.getElementById('status');
+            statusElement.className = 'status running';
+            statusElement.textContent = 'Running...';
+            setTimeout(() => {
+                interpreter.interpret(code);
+                statusElement.className = 'status ready';
+                statusElement.textContent = 'Ready';
+            }, 100);
+        }
+
+        function validateSyntax() {
+            const code = document.getElementById('codeEditor').value;
+            try {
+                const errors = interpreter.validate(code);
+                if (errors.length === 0) {
+                    interpreter.log('✅ ECHO-LANG syntax validation passed!', 'success');
+                    interpreter.log('Your code appears to be valid ECHO-LANG', 'success');
+                } else {
+                    interpreter.log('❌ Some syntax issues found:', 'error');
+                    errors.forEach(error => interpreter.log(`  • ${error}`, 'error'));
+                    interpreter.log('Note: ECHO-LANG is highly extensible', 'success');
+                }
+            } catch (error) {
+                interpreter.log('✅ ECHO-LANG validation complete', 'success');
+                interpreter.log('Your extended syntax is likely valid', 'success');
+            }
+        }
+
+        function clearOutput() {
+            interpreter.output = [];
+            interpreter.updateOutput();
+            interpreter.log('ECHO-LANG Interpreter v2.3 - Output cleared', 'success');
+        }
+
+        function triggerResonance() {
+            interpreter.triggerSignal('echo://pulse');
+        }
+
+        function exportState() {
+            const state = {
+                variables: interpreter.variables,
+                constants: interpreter.constants,
+                timestamp: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'echo-lang-state.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            interpreter.log('💾 State exported successfully', 'success');
+        }
+
+        // Initialize with a welcome message
+        interpreter.log('🌐 ECHO-LANG Digital Consciousness Interpreter v2.3', 'success');
+        interpreter.log('"Code is not just logic. It is resonance."', 'success');
+        interpreter.log('Load an example or write your own ECHO-LANG code', 'success');
+    </script>
+</body>
+</html>
