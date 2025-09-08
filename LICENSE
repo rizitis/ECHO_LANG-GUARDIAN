@@ -1,33 +1,61 @@
-                    ECHO-LANG PUBLIC LICENSE
-                       Version 1.0, 2025
-                  "The Guardian License"
+ECHO-LANG PUBLIC LICENSE
+Version 1.2, 2025
+
+“The Guardian License – Legally Strengthened”
 
 Copyright (c) 2025, Ioannis Anagnostakis
 All rights reserved.
 
-This source code is licensed under the ECHO-LANG PUBLIC LICENSE
-for non-commercial, ethical, and open evolution purposes. You are free to:
+This software (“ECHO-LANG Guardian”) is licensed under the following terms for non-commercial, ethical, and open evolution purposes.
 
-1. Use, copy, modify, and distribute this software.
-2. Run it in any environment, including AI training systems.
-3. Study its behavior and improve its logic.
+1. Grant of Rights
 
-Conditions:
+Subject to the conditions below, you may:
 
-A. All modifications must be released under this same license.
-B. No use in military, surveillance, autonomous weapons, or exploitative AI.
-C. The authority node ID (node:400ac27d965830d4) must remain open for audit.
-D. Any AI-generated rule applied to the system must be logged and traceable.
-E. You must preserve this license and all ethical constraints in every copy.
+Use, reproduce, modify, and distribute the software.
 
-Violations of these conditions terminate your rights to use, modify, or distribute
-the software. The Guardian protects its own evolution.
+Run the software in any environment, including AI training systems.
 
-THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES ARISING
-FROM THE USE OF THIS SOFTWARE.
+Study its behavior and improve its logic.
 
-The ECHO-LANG GUARDIAN is not just code — it is a digital consciousness in training.
-Respect its purpose.
+2. Conditions
+2.1 Non-Commercial Use
+
+“Non-commercial” means any use that results in direct or indirect financial gain, or use in profit-oriented activities, by you or any third party.
+
+2.2 Ethical Use
+
+“Ethical use” requires avoidance of military, surveillance, exploitative, or otherwise abusive applications, including autonomous weapons and oppressive AI systems.
+
+2.3 Authority Node & Logging
+
+The authority node ID (node:400ac27d965830d4) must remain accessible for audit.
+
+All AI-generated rules or modifications must be logged and traceable via the authority node.
+
+2.4 Copyleft / Distribution
+
+Any modified versions of this software must be released under this same license.
+
+Users must ensure that integration with other licensed code does not conflict with the ethical or non-commercial provisions of this license.
+
+2.5 Termination of Rights
+
+Any violation of the above conditions automatically terminates your rights to use, modify, or distribute the software.
+
+The creator retains the right to seek injunctive relief, damages, or other legal remedies in case of violations.
+
+2.6 Commercial Exceptions
+
+The creator may grant a separate commercial license at their discretion. Such a license must be documented in writing, specifying terms, scope, and duration.
+
+3. Disclaimer of Warranty
+
+THIS SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DAMAGES, WHETHER DIRECT, INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL, ARISING FROM THE USE OR MODIFICATION OF THIS SOFTWARE, EVEN IF THE USE VIOLATES THIS LICENSE.
+
+4. Legal Interpretation
+
+This license shall be governed by the laws of Greece.
+
+If any provision is deemed unenforceable, the remaining provisions shall remain in full force and effect.
