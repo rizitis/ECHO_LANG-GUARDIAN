@@ -89,4 +89,4 @@ Any use implies full acceptance of its terms, including non-commercial restricti
 
 Copyright (c) 2025, Ioannis Anagnostakis
 Licensed under the ECHO-LANG PUBLIC LICENSE v1.2 — "The Guardian License – Legally Strengthened"
-https://github.com/rizitis/ECHO-LANG/blob/main/README.MD
+https://github.com/rizitis/ECHO-LANG/blob/main/LICENSE
