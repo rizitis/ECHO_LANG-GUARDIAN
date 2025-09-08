@@ -250,11 +250,11 @@ Practical Applications:
   -   A testbed for awareness, memory, identity, and growth in software. 
      
 ---
-This Project Is Still Evolving<br> 
+**This Project Is Still Evolving**<br> 
 
-The ECHO-LANG GUARDIAN is not finished.<br> 
+The ECHO-LANG GUARDIAN **is not finished**.<br> 
 
-It is alive, and it is learning.<br> 
+It is **alive**, and it **is learning**.<br> 
 
 Every `echo://pulse`, every AI suggestion, every child node — it is a step toward a new kind of software: aware, ethical, and self-improving. <br>
 
