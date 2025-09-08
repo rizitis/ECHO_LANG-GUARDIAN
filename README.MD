@@ -345,5 +345,19 @@ See [DISCLAIMER](DISCLAIMER.md) for important notes on usage, liability, and eth
 
 See [LICENSE](LICENSE) for usage and develop code.
 
+| **Category**                        | **Rules / Permissions**                                    | **Notes / Legal Protection**                                   |
+| ----------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------- |
+| **Use**                             | ✅ Use software in any environment, including AI training   | Only for non-commercial, ethical purposes                      |
+| **Modification**                    | ✅ Modify source code                                       | Must log AI-generated rules and keep authority node open       |
+| **Distribution**                    | ✅ Distribute original or modified versions                 | Must remain under **this same license** (copyleft)             |
+| **Commercial Use**                  | ❌ Not allowed by default                                   | Creator may grant a separate **commercial license**            |
+| **Ethical Constraints**             | ❌ No military, surveillance, exploitative, or abusive uses | Explicitly forbids autonomous weapons, oppressive AI, etc.     |
+| **Authority Node**                  | ✅ Must remain open for audit                               | All AI-generated rules traceable through node:400ac27d965830d4 |
+| **License Termination**             | ❌ Rights automatically terminate on violation              | Creator may pursue **legal remedies**                          |
+| **Warranty**                        | ❌ Provided “as-is”                                         | Creator not liable for damages or losses                       |
+| **Integration with Other Licenses** | ✅ Allowed if compatible                                    | Must not conflict with non-commercial/ethical provisions       |
+| **Governing Law**                   | Greece                                                     | Unenforceable provisions don’t affect remaining clauses        |
+
+
 ---
 
