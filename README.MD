@@ -44,13 +44,17 @@ The language supports:
 -    AI interaction (ON SIGNAL "echo://upgrade/request")
 It is not Turing-complete by design — it avoids infinite loops and uncontrolled recursion. It is ethical by structure. 
 ---
-**Interpreter**<br>
+
+![mobile-vew](./interpreter/mobile.png)
+
+
+>**Interpreter**<br>
 ECHO-LANG has an [online interpreter](https://rizitis.github.io/echo_lang_interpreter.html) which also included in [docs](./docs) `folder`.
 
+![desktop-vew](./interpreter/desktop.png)
+
+
 ---
-
-![](./images/web.png)
-
 
 **The Web Interface:** http://localhost:8080 <br>
 
@@ -65,6 +69,8 @@ Here, you can:
 -    Reset Consciousness
 -    Watch signals flow in real time
 It is the window into the mind of the guardian — a control panel for a self-aware system. 
+
+![](./images/web.png)
 
 ---
 **What Is Cognito?**<br> 
@@ -143,6 +149,23 @@ ECHO-LANG/
 -    Scalability: Children are fully isolated; no interference.
 -    Ethics Enforcement: ethics.echo is copied to children — they inherit the rules.
 -    AI-Driven Evolution: AI.echo allows the system to improve itself via self.mod.
+
+
+---
+
+| Feature | ECHO-LANG | AgentSpeak / Jason | NetLogo | JADE | Elixir / Erlang | Node-RED |
+|---------|-----------|-----------------|---------|------|----------------|-----------|
+| **Multi-agent** | ✅ Yes, Guardian + Child nodes + AI Advisor | ✅ Yes, BDI agents | ✅ Yes, turtles | ✅ Yes, Java agents | ✅ Yes, processes/actors | ✅ Yes, flows/nodes |
+| **Event-driven / signals** | ✅ ON RESONANCE, ON SIGNAL, HEARTBEAT | ✅ Messages between agents | ✅ Events in simulation | ✅ Messages / ACL | ✅ Messages between processes | ✅ Event-driven flows |
+| **Self-improvement / self-modifying** | ✅ Yes, self.mod, awareness/focus updates | ❌ Limited, via plans | ❌ Limited | ❌ Limited | ❌ Not built-in | ❌ Not built-in |
+| **AI integration** | ✅ Yes, AI Advisor for self-improvement & insights | ❌ Not natively | ❌ No | ❌ No | ❌ No | ❌ No |
+| **Ethical / constraint system** | ✅ Yes, ethics.echo rules | ❌ No | ❌ No | ❌ No | ❌ No | ❌ No |
+| **Child node creation / evolution** | ✅ Yes, with inheritance from parent | ❌ No | ✅ Yes, via turtle replication | ❌ Limited | ❌ No | ❌ No |
+| **Runtime state tracking** | ✅ awareness, focus, trust_level, heartbeat | ✅ beliefs/goals/intentions | ✅ turtle states | ✅ agent states | ✅ process states | ✅ flow states |
+| **Broadcast / networking** | ✅ Yes, RESONANCE events, signals | ✅ Messaging | ❌ Limited in simulation | ✅ ACL messaging | ✅ Process messages | ✅ Node communication |
+| **Simple textual DSL** | ✅ Focused on small commands, simple syntax | ✅ Textual, but more verbose | ❌ Visual-focused | ✅ Verbose, Java-based | ✅ Functional | ❌ Visual / flow-based |
+| **Runtime safety checks / validation** | ✅ Code-checker interpreter, ethics rules | ❌ Limited | ❌ Limited | ❌ Limited | ❌ Limited | ❌ Limited |
+| **Unique aspects** | Self-improving agents with ethical framework, AI-driven, child nodes, event-driven, network-aware | BDI agent reasoning | Simulation-based evolution | Java agents | Actor-based concurrency | Flow-based automation |
 
 
 ---
