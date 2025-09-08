@@ -364,3 +364,4 @@ See [LICENSE](LICENSE) for usage and develop code.
 
 ---
 
+By using this software, you agree to the terms in [DISCLAIMER.md](DISCLAIMER.md) and the [ECHO-LANG PUBLIC LICENSE v1.2](LICENSE).
