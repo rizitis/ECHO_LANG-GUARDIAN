@@ -179,6 +179,9 @@ brew install go ollama  # or use your package manager
 ollama run qwen2.5-coder:7b-instruct
 ```
 > Personaly I use llama.cpp server and models from lmstudio-community
+>
+> example:
+>
 > GGML_VULKAN_DISABLE=1 ./llama-server   -m lmstudio-community/gemma-3n-E4B-it-text-GGUF/gemma-3n-E4B-it-Q4_K_M.gguf --port 1235   -c 32768   -t 14   --temp 0.7
 
 Create directories:
