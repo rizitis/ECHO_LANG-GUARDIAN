@@ -281,8 +281,9 @@ This is a complete, self-contained, ethical, AI-augmented digital organism with:
  
 
 ---
+<details>
+  <summary>Greek for greeks</summary>
 
-**Greek for greeks**<br>
 
 > Το world.echo ξεκινάει την αυτο-βελτίωση
 >
@@ -332,7 +333,9 @@ main() → loadConfig("world.echo") → awareness = 0.3
 -    resonance_hub/ → εδώ φτάνουν τα σήματα (π.χ. pulse.txt, insight.txt)
 -    network_hub/ → επικοινωνία με άλλους φύλακες
 -    cache/ → προσωρινά αρχεία (διαγράφονται όταν γεμίζει ο δίσκος)
- 
+
+</details>
+
 ---
 ##  Disclaimer
 
