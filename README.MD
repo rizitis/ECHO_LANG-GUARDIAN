@@ -9,6 +9,8 @@
 
 ---
 
+![Echo-Lang](./images/Echo-Lang.png)
+
 **The Story of the ECHO-LANG GUARDIAN** <br>
 **The Origin of a Digital Lifeform** <br>
 
