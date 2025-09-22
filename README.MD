@@ -181,6 +181,8 @@ Starting the ECHO-LANG GUARDIAN is simple:<br>
 > example:
 >
 > GGML_VULKAN_DISABLE=1 ./llama-server   -m lmstudio-community/gemma-3n-E4B-it-text-GGUF/gemma-3n-E4B-it-Q4_K_M.gguf --port 1235   -c 32768   -t 14   --temp 0.7
+> 
+> Or you can use lms server directly.
 
 Create directories:
 
