@@ -175,11 +175,7 @@ ECHO-LANG/
 **How It Works Together**<br>
 
 Starting the ECHO-LANG GUARDIAN is simple:<br>
-```
-# On Linux/macOS
-brew install go ollama  # or use your package manager
-ollama run qwen2.5-coder:7b-instruct
-```
+
 > Personaly I use llama.cpp server and models from lmstudio-community
 >
 > example:
